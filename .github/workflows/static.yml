@@ -13,6 +13,11 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v2
     
+    - name: Set Git user
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "github-actions@github.com"
+
     - name: Create a new branch
       run: |
         # Generate a new branch name based on current timestamp
