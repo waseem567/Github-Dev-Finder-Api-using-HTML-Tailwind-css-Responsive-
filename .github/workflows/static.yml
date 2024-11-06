@@ -1,32 +1,27 @@
-name: Auto Create Repo and Push Code
+name: Auto Create and Push to New Branch
 
 on:
   push:
     branches:
-      - main  # Trigger this action when there's a push to the `main` branch
+      - main  # Trigger this workflow on push to the 'main' branch (or any other branch you prefer)
 
 jobs:
-  create-and-push:
+  create-and-push-branch:
     runs-on: ubuntu-latest
+    
     steps:
-      # Step 1: Checkout the code from the current repository
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    
+    - name: Create a new branch
+      run: |
+        # Generate a new branch name based on current timestamp
+        NEW_BRANCH="auto-branch-$(date +'%Y%m%d%H%M%S')"
+        git checkout -b $NEW_BRANCH
+        git add .
+        git commit -m "Auto commit to $NEW_BRANCH"
+        git push origin $NEW_BRANCH
 
-      # Step 2: Create a new repository via GitHub API
-      - name: Create new repository
-        env:
-          GITHUB_TOKEN: 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
-        run: |
-          REPO_NAME="new-repo-$(date +'%Y-%m-%d-%H-%M-%S')"  # Generate a unique repo name based on the timestamp
-          curl -X POST -H "Authorization: token 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" \
-            -d '{"name": "'"$REPO_NAME"'"}' \
-            https://api.github.com/user/repos
-
-      # Step 3: Add the new repository as a remote and push the code to it
-      - name: Push to new repository
-        run: |
-          # Get the repo name from the previous step
-          REPO_NAME="new-repo-$(date +'%Y-%m-%d-%H-%M-%S')"  # Match the repo name from Step 2
-          git remote add new-repo https://github.com/${{ github.actor }}/$REPO_NAME.git
-          git push new-repo main
+    - name: Push the new branch to the repo
+      run: |
+        git push origin HEAD
