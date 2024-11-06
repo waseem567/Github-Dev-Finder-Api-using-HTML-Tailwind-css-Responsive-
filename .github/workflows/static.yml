@@ -3,25 +3,34 @@ name: Auto Create and Push to New Branch
 on:
   push:
     branches:
-      - main  # Trigger this workflow on push to the 'main' branch (or any other branch you prefer)
+      - main # Trigger this workflow on push to the 'main' branch (or any other branch you prefer)
 
 jobs:
   create-and-push-branch:
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout the code
-      uses: actions/checkout@v2
-    
-    - name: Create a new branch
-      run: |
-        # Generate a new branch name based on current timestamp
-        NEW_BRANCH="auto-branch-$(date +'%Y%m%d%H%M%S')"
-        git checkout -b $NEW_BRANCH
-        git add .
-        git commit -m "Auto commit to $NEW_BRANCH"
-        git push origin $NEW_BRANCH
 
-    - name: Push the new branch to the repo
-      run: |
-        git push origin HEAD
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set Git user
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Create a new branch and commit changes
+        run: |
+          # Generate a new branch name based on current timestamp
+          NEW_BRANCH="auto-branch-$(date +'%Y%m%d%H%M%S')"
+          git checkout -b $NEW_BRANCH
+
+          # Force add all changes, including untracked files
+          git add -A
+
+          # Check if there are any changes to commit
+          if ! git diff --cached --exit-code; then
+            git commit -m "Auto commit to $NEW_BRANCH"
+            git push origin $NEW_BRANCH
+          else
+            echo "No changes to commit"
+          fi
