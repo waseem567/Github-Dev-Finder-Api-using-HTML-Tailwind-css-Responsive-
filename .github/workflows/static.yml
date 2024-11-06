@@ -1,0 +1,32 @@
+name: Auto Create Repo and Push Code
+
+on:
+  push:
+    branches:
+      - main  # Trigger this action when there's a push to the `main` branch
+
+jobs:
+  create-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code from the current repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Create a new repository via GitHub API
+      - name: Create new repository
+        env:
+          GITHUB_TOKEN: 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
+        run: |
+          REPO_NAME="new-repo-$(date +'%Y-%m-%d-%H-%M-%S')"  # Generate a unique repo name based on the timestamp
+          curl -X POST -H "Authorization: token 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" \
+            -d '{"name": "'"$REPO_NAME"'"}' \
+            https://api.github.com/user/repos
+
+      # Step 3: Add the new repository as a remote and push the code to it
+      - name: Push to new repository
+        run: |
+          # Get the repo name from the previous step
+          REPO_NAME="new-repo-$(date +'%Y-%m-%d-%H-%M-%S')"  # Match the repo name from Step 2
+          git remote add new-repo https://github.com/${{ github.actor }}/$REPO_NAME.git
+          git push new-repo main
