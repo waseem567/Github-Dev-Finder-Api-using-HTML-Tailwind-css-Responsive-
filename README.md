@@ -1,4 +1,4 @@
-# Github-Dev-Finder-Api-using-HTML-Tailwind-css-Responsive-
+# Github-Dev-Finder-Api-using-HTML-Tailwind-css-Responsive
 # DARK MODE
 ![night dev](https://github.com/waseem567/Github-Dev-Finder-Api-using-HTML-Tailwind-css-Responsive-/assets/90834559/a41d84c8-d68d-41ca-ad2a-99c55614a745)
 # LIGHT MODE
